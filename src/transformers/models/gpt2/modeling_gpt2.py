@@ -215,6 +215,7 @@ class Attention(nn.Module):
         use_cache=False,
         output_attentions=False,
     ):
+        
         if encoder_hidden_states is not None:
             assert hasattr(
                 self, "q_attn"
@@ -225,9 +226,13 @@ class Attention(nn.Module):
         else:
             query, key, value = self.c_attn(hidden_states).split(self.split_size, dim=2)
 
+        # q, k, v shape : [batch_size, seq_len, hid_size]
         query = self.split_heads(query)
         key = self.split_heads(key, k=True)
         value = self.split_heads(value)
+
+        # q, k, v shape : (batch, head, head_features, seq_length) if k 
+        # else : (batch, head, seq_length, head_features)
         if layer_past is not None:
             past_key, past_value = layer_past[0].transpose(-2, -1), layer_past[1]  # transpose back cf below
             key = torch.cat((past_key, key), dim=-1)
@@ -239,9 +244,10 @@ class Attention(nn.Module):
             present = None
 
         attn_outputs = self._attn(query, key, value, attention_mask, head_mask, output_attentions)
-        a = attn_outputs[0]
+        a = attn_outputs[0] # attention(Q, K, V)
 
         a = self.merge_heads(a)
+        # a shape : (batch, seq_len, head * hid_size)
         a = self.c_proj(a)
         a = self.resid_dropout(a)
 
@@ -554,6 +560,7 @@ class GPT2Model(GPT2PreTrainedModel):
     @add_start_docstrings(PARALLELIZE_DOCSTRING)
     def parallelize(self, device_map=None):
         # Check validity of device_map
+        # map : device id -> layer id of certain layer block 
         self.device_map = (
             get_device_map(len(self.h), range(torch.cuda.device_count())) if device_map is None else device_map
         )
