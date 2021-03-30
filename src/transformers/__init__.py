@@ -48,6 +48,7 @@ from .file_utils import (
     is_tf_available,
     is_tokenizers_available,
     is_torch_available,
+    is_vision_available,
 )
 from .utils import logging
 
@@ -105,6 +106,7 @@ _import_structure = {
         "is_tokenizers_available",
         "is_torch_available",
         "is_torch_tpu_available",
+        "is_vision_available",
     ],
     "hf_argparser": ["HfArgumentParser"],
     "integrations": [
@@ -148,6 +150,7 @@ _import_structure = {
     "models.bert_generation": ["BertGenerationConfig"],
     "models.bert_japanese": ["BertJapaneseTokenizer", "CharacterTokenizer", "MecabTokenizer"],
     "models.bertweet": ["BertweetTokenizer"],
+    "models.big_bird": ["BIG_BIRD_PRETRAINED_CONFIG_ARCHIVE_MAP", "BigBirdConfig", "BigBirdTokenizer"],
     "models.blenderbot": ["BLENDERBOT_PRETRAINED_CONFIG_ARCHIVE_MAP", "BlenderbotConfig", "BlenderbotTokenizer"],
     "models.blenderbot_small": [
         "BLENDERBOT_SMALL_PRETRAINED_CONFIG_ARCHIVE_MAP",
@@ -174,6 +177,7 @@ _import_structure = {
     "models.fsmt": ["FSMT_PRETRAINED_CONFIG_ARCHIVE_MAP", "FSMTConfig", "FSMTTokenizer"],
     "models.funnel": ["FUNNEL_PRETRAINED_CONFIG_ARCHIVE_MAP", "FunnelConfig", "FunnelTokenizer"],
     "models.gpt2": ["GPT2_PRETRAINED_CONFIG_ARCHIVE_MAP", "GPT2Config", "GPT2Tokenizer"],
+    "models.gpt_neo": ["GPT_NEO_PRETRAINED_CONFIG_ARCHIVE_MAP", "GPTNeoConfig"],
     "models.herbert": ["HerbertTokenizer"],
     "models.ibert": ["IBERT_PRETRAINED_CONFIG_ARCHIVE_MAP", "IBertConfig"],
     "models.layoutlm": ["LAYOUTLM_PRETRAINED_CONFIG_ARCHIVE_MAP", "LayoutLMConfig", "LayoutLMTokenizer"],
@@ -341,6 +345,16 @@ else:
         name for name in dir(dummy_tokenizers_objects) if not name.startswith("_")
     ]
 
+# Vision-specific objects
+if is_vision_available():
+    _import_structure["image_utils"] = ["ImageFeatureExtractionMixin"]
+else:
+    from .utils import dummy_vision_objects
+
+    _import_structure["utils.dummy_vision_objects"] = [
+        name for name in dir(dummy_vision_objects) if not name.startswith("_")
+    ]
+
 # PyTorch-backed objects
 if is_torch_available():
     _import_structure["benchmark.benchmark"] = ["PyTorchBenchmark"]
@@ -394,6 +408,7 @@ if is_torch_available():
     _import_structure["generation_utils"] = ["top_k_top_p_filtering"]
     _import_structure["modeling_utils"] = ["Conv1D", "PreTrainedModel", "apply_chunking_to_forward", "prune_layer"]
     # PyTorch models structure
+
     _import_structure["models.albert"].extend(
         [
             "ALBERT_PRETRAINED_MODEL_ARCHIVE_LIST",
@@ -470,6 +485,22 @@ if is_torch_available():
             "BertGenerationDecoder",
             "BertGenerationEncoder",
             "load_tf_weights_in_bert_generation",
+        ]
+    )
+    _import_structure["models.big_bird"].extend(
+        [
+            "BIG_BIRD_PRETRAINED_MODEL_ARCHIVE_LIST",
+            "BigBirdForCausalLM",
+            "BigBirdForMaskedLM",
+            "BigBirdForMultipleChoice",
+            "BigBirdForPreTraining",
+            "BigBirdForQuestionAnswering",
+            "BigBirdForSequenceClassification",
+            "BigBirdForTokenClassification",
+            "BigBirdLayer",
+            "BigBirdModel",
+            "BigBirdPreTrainedModel",
+            "load_tf_weights_in_big_bird",
         ]
     )
     _import_structure["models.blenderbot"].extend(
@@ -621,6 +652,15 @@ if is_torch_available():
             "GPT2Model",
             "GPT2PreTrainedModel",
             "load_tf_weights_in_gpt2",
+        ]
+    )
+    _import_structure["models.gpt_neo"].extend(
+        [
+            "GPT_NEO_PRETRAINED_MODEL_ARCHIVE_LIST",
+            "GPTNeoForCausalLM",
+            "GPTNeoModel",
+            "GPTNeoPreTrainedModel",
+            "load_tf_weights_in_gpt_neo",
         ]
     )
     _import_structure["models.ibert"].extend(
@@ -1084,6 +1124,17 @@ if is_tf_available():
             "TFGPT2PreTrainedModel",
         ]
     )
+    _import_structure["models.layoutlm"].extend(
+        [
+            "TF_LAYOUTLM_PRETRAINED_MODEL_ARCHIVE_LIST",
+            "TFLayoutLMForMaskedLM",
+            "TFLayoutLMForSequenceClassification",
+            "TFLayoutLMForTokenClassification",
+            "TFLayoutLMMainLayer",
+            "TFLayoutLMModel",
+            "TFLayoutLMPreTrainedModel",
+        ]
+    )
     _import_structure["models.led"].extend(["TFLEDForConditionalGeneration", "TFLEDModel", "TFLEDPreTrainedModel"])
     _import_structure["models.longformer"].extend(
         [
@@ -1306,6 +1357,7 @@ if TYPE_CHECKING:
         is_tokenizers_available,
         is_torch_available,
         is_torch_tpu_available,
+        is_vision_available,
     )
     from .hf_argparser import HfArgumentParser
 
@@ -1352,6 +1404,7 @@ if TYPE_CHECKING:
     from .models.bert_generation import BertGenerationConfig
     from .models.bert_japanese import BertJapaneseTokenizer, CharacterTokenizer, MecabTokenizer
     from .models.bertweet import BertweetTokenizer
+    from .models.big_bird import BIG_BIRD_PRETRAINED_CONFIG_ARCHIVE_MAP, BigBirdConfig, BigBirdTokenizer
     from .models.blenderbot import BLENDERBOT_PRETRAINED_CONFIG_ARCHIVE_MAP, BlenderbotConfig, BlenderbotTokenizer
     from .models.blenderbot_small import (
         BLENDERBOT_SMALL_PRETRAINED_CONFIG_ARCHIVE_MAP,
@@ -1378,6 +1431,7 @@ if TYPE_CHECKING:
     from .models.fsmt import FSMT_PRETRAINED_CONFIG_ARCHIVE_MAP, FSMTConfig, FSMTTokenizer
     from .models.funnel import FUNNEL_PRETRAINED_CONFIG_ARCHIVE_MAP, FunnelConfig, FunnelTokenizer
     from .models.gpt2 import GPT2_PRETRAINED_CONFIG_ARCHIVE_MAP, GPT2Config, GPT2Tokenizer
+    from .models.gpt_neo import GPT_NEO_PRETRAINED_CONFIG_ARCHIVE_MAP, GPTNeoConfig
     from .models.herbert import HerbertTokenizer
     from .models.ibert import IBERT_PRETRAINED_CONFIG_ARCHIVE_MAP, IBertConfig
     from .models.layoutlm import LAYOUTLM_PRETRAINED_CONFIG_ARCHIVE_MAP, LayoutLMConfig, LayoutLMTokenizer
@@ -1533,6 +1587,11 @@ if TYPE_CHECKING:
     else:
         from .utils.dummy_tokenizers_objects import *
 
+    if is_vision_available():
+        from .image_utils import ImageFeatureExtractionMixin
+    else:
+        from .utils.dummy_vision_objects import *
+
     # Modeling
     if is_torch_available():
 
@@ -1648,6 +1707,20 @@ if TYPE_CHECKING:
             BertGenerationDecoder,
             BertGenerationEncoder,
             load_tf_weights_in_bert_generation,
+        )
+        from .models.big_bird import (
+            BIG_BIRD_PRETRAINED_MODEL_ARCHIVE_LIST,
+            BigBirdForCausalLM,
+            BigBirdForMaskedLM,
+            BigBirdForMultipleChoice,
+            BigBirdForPreTraining,
+            BigBirdForQuestionAnswering,
+            BigBirdForSequenceClassification,
+            BigBirdForTokenClassification,
+            BigBirdLayer,
+            BigBirdModel,
+            BigBirdPreTrainedModel,
+            load_tf_weights_in_big_bird,
         )
         from .models.blenderbot import (
             BLENDERBOT_PRETRAINED_MODEL_ARCHIVE_LIST,
@@ -1773,6 +1846,13 @@ if TYPE_CHECKING:
             GPT2Model,
             GPT2PreTrainedModel,
             load_tf_weights_in_gpt2,
+        )
+        from .models.gpt_neo import (
+            GPT_NEO_PRETRAINED_MODEL_ARCHIVE_LIST,
+            GPTNeoForCausalLM,
+            GPTNeoModel,
+            GPTNeoPreTrainedModel,
+            load_tf_weights_in_gpt_neo,
         )
         from .models.ibert import (
             IBERT_PRETRAINED_MODEL_ARCHIVE_LIST,
@@ -2010,6 +2090,15 @@ if TYPE_CHECKING:
         # Benchmarks
         from .benchmark.benchmark_tf import TensorFlowBenchmark
         from .generation_tf_utils import tf_top_k_top_p_filtering
+        from .modeling_tf_layoutlm import (
+            TF_LAYOUTLM_PRETRAINED_MODEL_ARCHIVE_LIST,
+            TFLayoutLMForMaskedLM,
+            TFLayoutLMForSequenceClassification,
+            TFLayoutLMForTokenClassification,
+            TFLayoutLMMainLayer,
+            TFLayoutLMModel,
+            TFLayoutLMPreTrainedModel,
+        )
         from .modeling_tf_utils import TFPreTrainedModel, TFSequenceSummary, TFSharedEmbeddings, shape_list
         from .models.albert import (
             TF_ALBERT_PRETRAINED_MODEL_ARCHIVE_LIST,

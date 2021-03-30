@@ -21,8 +21,6 @@ from collections import OrderedDict
 from ...configuration_utils import PretrainedConfig
 from ...file_utils import add_start_docstrings
 from ...utils import logging
-
-# Add modeling imports here
 from ..albert.modeling_albert import (
     AlbertForMaskedLM,
     AlbertForMultipleChoice,
@@ -51,6 +49,16 @@ from ..bert.modeling_bert import (
     BertModel,
 )
 from ..bert_generation.modeling_bert_generation import BertGenerationDecoder, BertGenerationEncoder
+from ..big_bird.modeling_big_bird import (
+    BigBirdForCausalLM,
+    BigBirdForMaskedLM,
+    BigBirdForMultipleChoice,
+    BigBirdForPreTraining,
+    BigBirdForQuestionAnswering,
+    BigBirdForSequenceClassification,
+    BigBirdForTokenClassification,
+    BigBirdModel,
+)
 from ..blenderbot.modeling_blenderbot import BlenderbotForCausalLM, BlenderbotForConditionalGeneration, BlenderbotModel
 from ..blenderbot_small.modeling_blenderbot_small import (
     BlenderbotSmallForCausalLM,
@@ -127,6 +135,9 @@ from ..funnel.modeling_funnel import (
     FunnelModel,
 )
 from ..gpt2.modeling_gpt2 import GPT2ForSequenceClassification, GPT2LMHeadModel, GPT2Model
+
+# Add modeling imports here
+from ..gpt_neo.modeling_gpt_neo import GPTNeoForCausalLM, GPTNeoModel
 from ..ibert.modeling_ibert import (
     IBertForMaskedLM,
     IBertForMultipleChoice,
@@ -263,6 +274,7 @@ from .configuration_auto import (
     BartConfig,
     BertConfig,
     BertGenerationConfig,
+    BigBirdConfig,
     BlenderbotConfig,
     BlenderbotSmallConfig,
     CamembertConfig,
@@ -278,6 +290,7 @@ from .configuration_auto import (
     FSMTConfig,
     FunnelConfig,
     GPT2Config,
+    GPTNeoConfig,
     IBertConfig,
     LayoutLMConfig,
     LEDConfig,
@@ -315,6 +328,8 @@ logger = logging.get_logger(__name__)
 MODEL_MAPPING = OrderedDict(
     [
         # Base model mapping
+        (GPTNeoConfig, GPTNeoModel),
+        (BigBirdConfig, BigBirdModel),
         (Speech2TextConfig, Speech2TextModel),
         (Wav2Vec2Config, Wav2Vec2Model),
         (M2M100Config, M2M100Model),
@@ -380,6 +395,7 @@ MODEL_FOR_PRETRAINING_MAPPING = OrderedDict(
         (RobertaConfig, RobertaForMaskedLM),
         (SqueezeBertConfig, SqueezeBertForMaskedLM),
         (BertConfig, BertForPreTraining),
+        (BigBirdConfig, BigBirdForPreTraining),
         (OpenAIGPTConfig, OpenAIGPTLMHeadModel),
         (GPT2Config, GPT2LMHeadModel),
         (MobileBertConfig, MobileBertForPreTraining),
@@ -402,6 +418,8 @@ MODEL_FOR_PRETRAINING_MAPPING = OrderedDict(
 MODEL_WITH_LM_HEAD_MAPPING = OrderedDict(
     [
         # Model with LM heads mapping
+        (GPTNeoConfig, GPTNeoForCausalLM),
+        (BigBirdConfig, BigBirdForMaskedLM),
         (Speech2TextConfig, Speech2TextForConditionalGeneration),
         (Wav2Vec2Config, Wav2Vec2ForMaskedLM),
         (M2M100Config, M2M100ForConditionalGeneration),
@@ -444,6 +462,8 @@ MODEL_WITH_LM_HEAD_MAPPING = OrderedDict(
 MODEL_FOR_CAUSAL_LM_MAPPING = OrderedDict(
     [
         # Model for Causal LM mapping
+        (GPTNeoConfig, GPTNeoForCausalLM),
+        (BigBirdConfig, BigBirdForCausalLM),
         (CamembertConfig, CamembertForCausalLM),
         (XLMRobertaConfig, XLMRobertaForCausalLM),
         (RobertaConfig, RobertaForCausalLM),
@@ -473,6 +493,7 @@ MODEL_FOR_CAUSAL_LM_MAPPING = OrderedDict(
 MODEL_FOR_MASKED_LM_MAPPING = OrderedDict(
     [
         # Model for Masked LM mapping
+        (BigBirdConfig, BigBirdForMaskedLM),
         (Wav2Vec2Config, Wav2Vec2ForMaskedLM),
         (ConvBertConfig, ConvBertForMaskedLM),
         (LayoutLMConfig, LayoutLMForMaskedLM),
@@ -523,6 +544,7 @@ MODEL_FOR_SEQ_TO_SEQ_CAUSAL_LM_MAPPING = OrderedDict(
 MODEL_FOR_SEQUENCE_CLASSIFICATION_MAPPING = OrderedDict(
     [
         # Model for Sequence Classification mapping
+        (BigBirdConfig, BigBirdForSequenceClassification),
         (ConvBertConfig, ConvBertForSequenceClassification),
         (LEDConfig, LEDForSequenceClassification),
         (DistilBertConfig, DistilBertForSequenceClassification),
@@ -558,6 +580,7 @@ MODEL_FOR_SEQUENCE_CLASSIFICATION_MAPPING = OrderedDict(
 MODEL_FOR_QUESTION_ANSWERING_MAPPING = OrderedDict(
     [
         # Model for Question Answering mapping
+        (BigBirdConfig, BigBirdForQuestionAnswering),
         (ConvBertConfig, ConvBertForQuestionAnswering),
         (LEDConfig, LEDForQuestionAnswering),
         (DistilBertConfig, DistilBertForQuestionAnswering),
@@ -595,6 +618,7 @@ MODEL_FOR_TABLE_QUESTION_ANSWERING_MAPPING = OrderedDict(
 MODEL_FOR_TOKEN_CLASSIFICATION_MAPPING = OrderedDict(
     [
         # Model for Token Classification mapping
+        (BigBirdConfig, BigBirdForTokenClassification),
         (ConvBertConfig, ConvBertForTokenClassification),
         (LayoutLMConfig, LayoutLMForTokenClassification),
         (DistilBertConfig, DistilBertForTokenClassification),
@@ -622,6 +646,7 @@ MODEL_FOR_TOKEN_CLASSIFICATION_MAPPING = OrderedDict(
 MODEL_FOR_MULTIPLE_CHOICE_MAPPING = OrderedDict(
     [
         # Model for Multiple Choice mapping
+        (BigBirdConfig, BigBirdForMultipleChoice),
         (ConvBertConfig, ConvBertForMultipleChoice),
         (CamembertConfig, CamembertForMultipleChoice),
         (ElectraConfig, ElectraForMultipleChoice),
